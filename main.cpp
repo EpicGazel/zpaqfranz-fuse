@@ -192,7 +192,7 @@ void explore_tree(tree<File*>* tr, const string& zpaq_file) {
         } else {
             int i = 0;
             for (auto child = currIter.node->first_child; child; child = child->next_sibling) {
-                cout << "\t" << ++i << ": " << child->data->str() << endl;
+                cout << "\t" << i++ << ": " << child->data->str() << endl;
             }
 
             cout << "Enter a node number to explore it." << endl;
@@ -225,8 +225,8 @@ void explore_tree(tree<File*>* tr, const string& zpaq_file) {
             // } catch (const exception& e) {
             //     cerr << "Something went wrong with the file path. Error: " << e.what() << endl;
             // }
-        } else if (isdigit(user_input[0]) && 0 < stoi(user_input) <= tr->number_of_children(currIter)) {
-            currIter = currIter.node->first_child + stoi(user_input) - 1;
+        } else if (isdigit(user_input[0]) && 0 < stoi(user_input) < tr->number_of_children(currIter)) {
+            currIter = tr->child(currIter, stoi(user_input));
         } else if (user_input == "..") {
             if (currIter.node->parent) {
                 currIter = currIter.node->parent;
@@ -264,7 +264,7 @@ void run(const string& zpaqfranz_path) {
     string file_path;
     // cout << "Enter file path to load: ";
     // cin >> file_path;
-    file_path = "example.zpaq";
+    file_path = "/mnt/e/bdrivefiles/zpaqs/g_small.zpaq";
 
     string ext = file_path.substr(file_path.find_last_of('.') + 1);
     string zpaq_file;
