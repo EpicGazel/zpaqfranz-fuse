@@ -15,13 +15,11 @@ using namespace std;
 
 // Function declarations
 tree<File*>::iterator build_parent_nodes(tree<File*>* tr, const string& path);
-void add_node_new(tree<File*>* tr, File& node);
+void add_node_new(tree<File*>* tr, File* node);
 void create_filetree(tree<File*>* tr, vector<string> contents);
 string extract_file(const string& zpaq_file, string extract_from_path, string extract_to_path, bool is_directory = false);
 string read_file(const string& zpaq_file, const string& extract_from_path);
 void explore_tree(tree<File*>* tree, const string& zpaq_file);
-//void load_create_config();
-///void linux_tests();
 vector<string> exec(const char* cmd);
 void run(const string& zpaq_path);
 int main(int argc, char** argv);
@@ -149,17 +147,17 @@ string extract_file(const string& zpaq_file, string extract_from_path, string ex
     return extract_to_path + "/" + extract_from_path.substr(extract_from_path.find_last_of('/') + 1);
 }
 
-// string read_file(const string& zpaq_file, const string& extract_from_path) {
-//     try {
-//         string command = zpaq_file + " x \"" + zpaq_file + "\" \"" + extract_from_path + "\" -longpath -stdout";
-//         cout << "Command: " << command << endl;
-//         string output = exec(command.c_str());
-//         return output;
-//     } catch (const exception& e) {
-//         cerr << "Something went wrong with extracting. Error: " << e.what() << endl;
-//         return "";
-//     }
-// }
+string read_file(const string& zpaq_file, const string& extract_from_path) {
+    try {
+        string command = "zpaqfranz x \"" + zpaq_file + "\" \"" + extract_from_path + "\" -longpath -stdout";
+        cout << "Command: " << command << endl;
+        vector<string> output = exec(command.c_str());
+        return accumulate(output.begin(), output.end(), string(""));
+    } catch (const exception& e) {
+        cerr << "Something went wrong with extracting. Error: " << e.what() << endl;
+        return "";
+    }
+}
 
 void explore_tree(tree<File*>* tr, const string& zpaq_file) {
     string user_input = "0";
@@ -187,7 +185,6 @@ void explore_tree(tree<File*>* tr, const string& zpaq_file) {
 
             cout << "Enter a node number to explore it." << endl;
             cout << "Enter .. to go back a directory. Enter root to go back to root." << endl;
-            cout << "Enter s to save tree to file." << endl;
             cout << "Enter x to extract file/directory." << endl;
             cout << "Enter q to quit." << endl;
         }
@@ -195,9 +192,6 @@ void explore_tree(tree<File*>* tr, const string& zpaq_file) {
         cin >> user_input;
         if (user_input == "q" || user_input == "Q") {
             break;
-        } else if (user_input == "s") {
-            std::cout << "Not implemented." << endl;
-            // string file_type, path;
             // cout << "Enter text or json: ";
             // cin >> file_type;
             // cout << "Enter path: ";
@@ -226,12 +220,6 @@ void explore_tree(tree<File*>* tr, const string& zpaq_file) {
         } else if (user_input == "root") {
             currIter = tr->begin();
         } else if (user_input == "x") {
-            //std::cout << "Not implemented." << endl;
-            
-            // if (zpaq_file.empty()) {
-            //     cout << "Please specify path to zpaq file: ";
-            //     cin >> zpaq_file;
-            // }
             string extract_path;
             cout << "Enter extract path (not including file/directory name): ";
             cin >> extract_path;
@@ -241,14 +229,6 @@ void explore_tree(tree<File*>* tr, const string& zpaq_file) {
         }
     }
 }
-
-// void load_create_config() {
-//     // Load or create config file
-// }
-
-// void linux_tests() {
-//     // Run Linux tests
-// }
 
 void run(const string& zpaqfranz_path) {
     string file_path;
@@ -310,7 +290,6 @@ int main(int argc, char** argv) {
     //     zpaq_path = argv[1];
     // }
 
-    //load_create_config();
     run(zpaq_path);
 
     return 0;
