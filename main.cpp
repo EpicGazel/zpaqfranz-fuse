@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <numeric>
+#include "lib/Fusepp/Fuse.h"
 
 using namespace std;
 

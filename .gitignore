@@ -1,5 +1,5 @@
 /.vscode
-/example.zpaq
+*.zpaq
 /file.hpp.gch
 /file_tree.h.gch
 /file_tree.h.old
@@ -7,3 +7,10 @@
 /main.out
 /tree
 /tree.hh.gch
+/lib
+/example
+/CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+/build
+CMakeLists.txt
