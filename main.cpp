@@ -9,6 +9,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <numeric>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ using namespace std;
 tree<File*>::iterator build_parent_nodes(tree<File*>* tr, const string& path);
 void add_node_new(tree<File*>* tr, File& node);
 void create_filetree(tree<File*>* tr, vector<string> contents);
-string extract_file(const string& zpaq_file, const string& extract_from_path, const string& extract_to_path, bool is_directory = false);
+string extract_file(const string& zpaq_file, string extract_from_path, string extract_to_path, bool is_directory = false);
 string read_file(const string& zpaq_file, const string& extract_from_path);
 void explore_tree(tree<File*>* tree, const string& zpaq_file);
 //void load_create_config();
@@ -122,42 +123,31 @@ void create_filetree(tree<File*>* tr, vector<string> contents) {
     }
 }
 
-// string extract_file(const string& zpaq_file, const string& extract_from_path, const string& extract_to_path, bool is_directory) {
-//     string command;
-//     if (is_directory) {
-//         if (extract_to_path.back() != '/') extract_to_path += "/";
-//         if (extract_from_path.back() != '/') extract_from_path += "/";
+string extract_file(const string& zpaq_file, string extract_from_path, string extract_to_path, bool is_directory) {
+    string command;
+    if (is_directory) {
+        if (extract_to_path.back() != '/') extract_to_path += "/";
+        if (extract_from_path.back() != '/') extract_from_path += "/";
+        command = "zpaqfranz x \"" + zpaq_file + "\" \"" + extract_from_path + "\" -to \"" + extract_to_path + "\"" + " -space";
+    } else {
+        if (extract_from_path.back() == '/')
+            extract_to_path += extract_from_path.substr(extract_from_path.find_last_of('/') + 1);
+        else
+            extract_to_path += extract_from_path.substr(extract_from_path.find_last_of('/') + 1);
+        
+        command = "zpaqfranz x \"" + zpaq_file + "\" \"" + extract_from_path + "\" -to \"" + extract_to_path + "\"" + " -space";
+    }
 
-//         if (system() == "Windows") {
-//             command = zpaq_file + " x \"" + zpaq_file + "\" \"" + extract_from_path + "\" -to \"" + extract_to_path + "\" -longpath -find " + extract_from_path;
-//         } else {
-//             command = zpaq_file + " x \"" + zpaq_file + "\" \"" + extract_from_path + "\" -to \"" + extract_to_path + "\"";
-//         }
-//     } else {
-//         if (system() == "Windows") {
-//             if (extract_to_path.back() == '/') extract_to_path.pop_back();
-//             command = zpaq_file + " x \"" + zpaq_file + "\" \"" + extract_from_path + "\" -to \"" + extract_to_path + "\" -longpath -find " + extract_from_path;
-//             if (extract_to_path.back() == ':') command += " -space";
-//         } else {
-//             if (extract_from_path.back() == '/') {
-//                 extract_to_path += extract_from_path.substr(extract_from_path.find_last_of('/') + 1);
-//             } else {
-//                 extract_to_path += extract_from_path.substr(extract_from_path.find_last_of('/') + 1);
-//             }
-//             command = zpaq_file + " x \"" + zpaq_file + "\" \"" + extract_from_path + "\" -to \"" + extract_to_path + "\"";
-//         }
-//     }
+    cout << "Command: " << command << endl;
+    try {
+        vector<string> output = exec(command.c_str());
+        cout << accumulate(output.begin(), output.end(), string("")) << endl;
+    } catch (const exception& e) {
+        cerr << "Something went wrong with extracting. Error: " << e.what() << endl;
+    }
 
-//     cout << "Command: " << command << endl;
-//     try {
-//         string output = exec(command.c_str());
-//         cout << output << endl;
-//         return extract_to_path + "/" + extract_from_path.substr(extract_from_path.find_last_of('/') + 1);
-//     } catch (const exception& e) {
-//         cerr << "Something went wrong with extracting. Error: " << e.what() << endl;
-//         return "";
-//     }
-// }
+    return extract_to_path + "/" + extract_from_path.substr(extract_from_path.find_last_of('/') + 1);
+}
 
 // string read_file(const string& zpaq_file, const string& extract_from_path) {
 //     try {
@@ -236,16 +226,16 @@ void explore_tree(tree<File*>* tr, const string& zpaq_file) {
         } else if (user_input == "root") {
             currIter = tr->begin();
         } else if (user_input == "x") {
-            std::cout << "Not implemented." << endl;
-            // string extract_path;
+            //std::cout << "Not implemented." << endl;
+            
             // if (zpaq_file.empty()) {
             //     cout << "Please specify path to zpaq file: ";
             //     cin >> zpaq_file;
             // }
-            // cout << "Enter extract path (not including file/directory name): ";
-            // cin >> extract_path;
-            // auto node = tree.get_node(curr_node);
-            // extract_file(zpaq_file, node->data.fullPath, extract_path, !node->is_leaf());
+            string extract_path;
+            cout << "Enter extract path (not including file/directory name): ";
+            cin >> extract_path;
+            extract_file(zpaq_file, currIter.node->data->fullPath, extract_path, currIter.node->data->is_directory());
         } else {
             cerr << "Invalid input. Please try again." << endl;
         }
