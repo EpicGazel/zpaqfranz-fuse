@@ -230,18 +230,13 @@ void explore_tree(tree<File*>* tr, const string& zpaq_file) {
     }
 }
 
-void run(const string& zpaqfranz_path) {
-    string file_path;
-    // cout << "Enter file path to load: ";
-    // cin >> file_path;
-    file_path = "/mnt/e/bdrivefiles/zpaqs/g_small.zpaq";
-
+void run(const string& file_path) {
     string ext = file_path.substr(file_path.find_last_of('.') + 1);
     string zpaq_file;
     vector<string> contents;
     try {
         if (ext == "zpaq") {
-            string command = zpaqfranz_path + " l " + file_path + " -longpath";
+            string command = "zpaqfranz l " + file_path + " -longpath";
             contents = exec(command.c_str());
             zpaq_file = file_path;
         } else if (ext == "txt") {
@@ -282,15 +277,15 @@ void run(const string& zpaqfranz_path) {
 }
 
 int main(int argc, char** argv) {
-    string zpaq_path = "zpaqfranz";
-    // if (argc < 2) {
-    //     cout << "Enter zpaqfranz path: ";
-    //     cin >> zpaq_path;
-    // } else {
-    //     zpaq_path = argv[1];
-    // }
+    string file_path;
+    if (argc < 2) {
+        cout << "Enter zpaqfranz path: ";
+        cin >> file_path;
+    } else {
+        file_path = argv[1];
+    }
 
-    run(zpaq_path);
+    run(file_path);
 
     return 0;
 }
